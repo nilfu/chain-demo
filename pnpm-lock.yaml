@@ -10,6 +10,7 @@ specifiers:
   '@types/react-dom': 18.0.11
   '@types/tunnel': ^0.0.3
   autoprefixer: 10.4.14
+  axios: ^1.3.5
   eslint: 8.38.0
   eslint-config-next: 13.3.0
   eslint-config-prettier: ^8.8.0
@@ -39,6 +40,7 @@ dependencies:
   '@types/react': 18.0.35
   '@types/react-dom': 18.0.11
   autoprefixer: 10.4.14_postcss@8.4.21
+  axios: 1.3.5
   eslint: 8.38.0
   eslint-config-next: 13.3.0_voubu7prgxjfsfbgx5d4sqnwiy
   ethereumjs-wallet: 1.0.2
@@ -3248,6 +3250,16 @@ packages:
       - debug
     dev: false
 
+  /axios/1.3.5:
+    resolution: {integrity: sha512-glL/PvG/E+xCWwV8S6nCHcrfg1exGx7vxyUIivIA1iL7BIh6bePylCfVHwp6k13ao7SATxB6imau2kqY+I67kw==}
+    dependencies:
+      follow-redirects: 1.15.2
+      form-data: 4.0.0
+      proxy-from-env: 1.1.0
+    transitivePeerDependencies:
+      - debug
+    dev: false
+
   /axobject-query/3.1.1:
     resolution: {integrity: sha512-goKlv8DZrK9hUh975fnHzhNIO4jUnFCfv/dszV5VwUGDFjI6vQ2VwoyjYjYNEbBE8AH87TduWP5uyDR1D+Iteg==}
     dependencies:
@@ -6007,6 +6019,10 @@ packages:
 
   /proxy-compare/2.5.0:
     resolution: {integrity: sha512-f1us0OsVAJ3tdIMXGQx2lmseYS4YXe4W+sKF5g5ww/jV+5ogMadPt+sIZ+88Ga9kvMJsrRNWzCrKPpr6pMWYbA==}
+    dev: false
+
+  /proxy-from-env/1.1.0:
+    resolution: {integrity: sha512-D+zkORCbA9f1tdWRK0RaCR3GPv50cMxcrz4X8k5LTSUD1Dkw47mKJEZQNunItRTkWwgtaUSo1RVFRIG9ZXiFYg==}
     dev: false
 
   /punycode/2.3.0:

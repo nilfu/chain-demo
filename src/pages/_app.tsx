@@ -5,6 +5,8 @@ import { WagmiConfig } from 'wagmi'
 import { client } from '@/libs/wagmi'
 import { Layout } from '@/components/Layout'
 import { ChakraProvider } from '@chakra-ui/react'
+import { options } from '@/libs/swr'
+import { SWRConfig } from 'swr'
 
 export default function App({ Component, pageProps }: AppProps) {
   const [mounted, setMounted] = useState(false)
@@ -12,11 +14,13 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <WagmiConfig client={client}>
       <ChakraProvider>
-        {mounted && (
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
-        )}
+        <SWRConfig value={options}>
+          {mounted && (
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          )}
+        </SWRConfig>
       </ChakraProvider>
     </WagmiConfig>
   )
