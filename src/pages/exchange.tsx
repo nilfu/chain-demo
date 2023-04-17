@@ -1,6 +1,7 @@
 import { Input, Button, VStack, HStack, useToast } from '@chakra-ui/react'
 import axios from 'axios'
 import { useState } from 'react'
+import * as xlsx from 'xlsx'
 
 export default function Exchange() {
   const toast = useToast()
@@ -16,9 +17,35 @@ export default function Exchange() {
   const [address, setAddress] = useState<string>('')
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  const importData = async () => {
+  const readerExcel = (file: File) => {
+    const fileReader = new FileReader()
+    fileReader.readAsBinaryString(file)
+    fileReader.onload = (event: any) => {
+      try {
+        const fileData = event.target.result
+        const workbook = xlsx.read(fileData, {
+          type: 'binary',
+        })
+
+        const wsname = workbook.SheetNames[0]
+
+        const sheetJson = xlsx.utils.sheet_to_json(workbook.Sheets[wsname])
+        byFile(sheetJson)
+      } catch (e) {
+        console.log(e)
+        return false
+      }
+    }
+  }
+  const upload = async (e: any) => {
+    const file = e.target.files[0]
+    readerExcel(file)
+    e.value = ''
+  }
+
+  const byFile = async (data: any) => {
     try {
-      const res = await axios.post(`/api/upload/xlsx`)
+      const res = await axios.post(`/api/upload/xlsx`, data)
     } catch (e) {
       toast({
         title: '上传失败',
@@ -101,15 +128,9 @@ export default function Exchange() {
           />
         </div>
         <HStack>
-          <Button
-            disabled={isLoading}
-            isLoading={isLoading}
-            onClick={importData}
-          >
-            上传表格
-          </Button>
+          <Input type="file" onChange={(e) => upload(e)} />
           <Button disabled={isLoading} isLoading={isLoading} onClick={submit}>
-            提交
+            提币
           </Button>
         </HStack>
       </VStack>

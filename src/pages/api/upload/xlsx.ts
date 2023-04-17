@@ -19,6 +19,7 @@ export default async function handler(
   }
 
   try {
+    console.log(req.body)
     return res.status(200).json({ data: [1, 2, 3] })
   } catch (err) {
     console.error('Error', err)
