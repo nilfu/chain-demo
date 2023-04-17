@@ -20,7 +20,6 @@ export default function Exchange() {
   const [secretKey, setSecretKey] = useState<string>(
     'CEpWtjO2hIW3L0ybNf80V7YgBOxwusJEJbaIasVhSxGhReDk1b86TlK4KnhY3f1h',
   )
-  const [proxy, setProxy] = useState<string>('7890')
   const [min, setMin] = useState<number>(0)
   const [max, setMax] = useState<number>(1)
   const [minTime, setMinTime] = useState<number>(0)
@@ -28,6 +27,7 @@ export default function Exchange() {
   const [step, setStep] = useState<number>(0)
   const [address, setAddress] = useState<string>('')
   const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [ret, setRet] = useState<any[]>([])
 
   const randomCoin = () => {
     const addArr = address.split(/[(\r\n)\r\n]+/)
@@ -52,9 +52,7 @@ export default function Exchange() {
         const workbook = xlsx.read(fileData, {
           type: 'binary',
         })
-
         const wsname = workbook.SheetNames[0]
-
         const sheetJson = xlsx.utils.sheet_to_json(workbook.Sheets[wsname])
         byFile(sheetJson)
       } catch (e) {
@@ -64,15 +62,25 @@ export default function Exchange() {
     }
   }
 
-  const upload = async (e: any) => {
-    const file = e.target.files[0]
-    readerExcel(file)
-    e.value = ''
+  const exportExcel = (
+    array: any[],
+    sheetName = '表1',
+    fileName = '1.xlsx',
+  ) => {
+    const jsonWorkSheet = xlsx.utils.json_to_sheet(array)
+    const workBook = {
+      SheetNames: [sheetName],
+      Sheets: {
+        [sheetName]: jsonWorkSheet,
+      },
+    }
+    return xlsx.writeFile(workBook, fileName)
   }
 
   const byFile = async (data: any) => {
     try {
       const res = await axios.post(`/api/upload/xlsx`, data)
+      console.log(res)
     } catch (e) {
       toast({
         title: '上传失败',
@@ -88,11 +96,16 @@ export default function Exchange() {
       const res = await axios.post(`/api/exchange/coin`, {
         apiKey,
         secretKey,
-        proxy,
-        min,
-        max,
+        minTime,
+        maxTime,
         address,
       })
+      if (res.data.result) {
+        setRet(res.data.result)
+        // setRet([
+        //   { address: '0x4E577819A23e81e4C1bf8F23CC5947AaEA3F37Ea', amount: 1 },
+        // ])
+      }
     } catch (e) {
       toast({
         title: '提交失败',
@@ -121,14 +134,6 @@ export default function Exchange() {
               placeholder="请输入secretKey"
               value={secretKey}
               onChange={(e) => setSecretKey(e.target.value)}
-            />
-          </div>
-          <div className="flex w-full items-center justify-between gap-2">
-            <p className="w-24">代理地址</p>
-            <Input
-              placeholder="请输入代理地址"
-              value={proxy}
-              onChange={(e) => setProxy(e.target.value)}
             />
           </div>
           <div className="flex w-full items-center justify-start gap-2">
@@ -179,7 +184,14 @@ export default function Exchange() {
             />
           </div>
           <HStack justifyContent={'flex-end'}>
-            <Input type="file" onChange={(e) => upload(e)} w={'100'} />
+            <Button
+              disabled={isLoading}
+              isLoading={isLoading}
+              onClick={() => exportExcel(ret)}
+            >
+              下载表格
+            </Button>
+            {/* <input type="file" onChange={(e) => upload(e)} /> */}
             <Button disabled={isLoading} isLoading={isLoading} onClick={submit}>
               提币
             </Button>

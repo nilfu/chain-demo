@@ -19,8 +19,7 @@ export default async function handler(
   }
 
   try {
-    console.log(req.body)
-    return res.status(200).json({ data: [1, 2, 3] })
+    return res.status(200).json({ data: req.body })
   } catch (err) {
     console.error('Error', err)
     return res.status(500).json({ code: 500, message: '未知错误' })

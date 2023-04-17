@@ -1,8 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 
-import { Spot } from '@binance/connector'
-import tunnel from 'tunnel'
-import { account, initAgent, initClient } from '@/libs/binance'
+import { account, initAgent, initClient, withdraw } from '@/libs/binance'
 
 type Response<T> =
   | {
@@ -11,31 +9,41 @@ type Response<T> =
       data?: T
     }
   | {
-      data: any
+      result: any
     }
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Response<null>>,
+  res: NextApiResponse<Response<any>>,
 ) {
   if (req.method !== 'POST') {
     return res.status(405).end()
   }
 
   try {
-    const { apiKey, secretKey, proxy, min, max, address } = req.body
+    const { apiKey, secretKey, minTime, maxTime, address } = req.body
 
-    initAgent(proxy)
+    initAgent()
     initClient(apiKey, secretKey)
 
-    try {
-      const res = await account()
-      console.log(res)
-    } catch (e) {
-      console.log(e)
+    let result: any[] = []
+    const arr = address.split(/[(\r\n)\r\n]+/)
+    for (let item of arr) {
+      const time = (maxTime - minTime) * Math.random()
+      const [addr, amount] = item.split(',')
+      try {
+        setTimeout(async () => {
+          const res = await withdraw(addr, amount)
+          if (res) {
+            result.push(`${addr},${amount}`)
+          }
+        }, time)
+      } catch (error) {
+        result.push(`${addr},fail`)
+      }
     }
 
-    return res.status(200).json({ data: [1, 2] })
+    return res.status(200).json({ result })
   } catch (err) {
     console.error('Error', err)
     return res.status(500).json({ code: 500, message: '未知错误' })
